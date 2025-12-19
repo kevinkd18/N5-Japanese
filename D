@@ -1,0 +1,70 @@
+import os
+import subprocess
+
+path = r"Z:\3TL_C\TOOL"
+
+if os.path.exists(path):
+    folders = [f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))]
+    
+    for i, folder in enumerate(folders, 1):
+        print(f"\n{i}. {folder}:")
+        folder_path = os.path.join(path, folder)
+        items = os.listdir(folder_path)
+        for item in items:
+            print(f"   - {item}")
+        
+        # 01_ folder - exe run kro
+        if folder.startswith("01_"):
+            exe_files = [f for f in items if f.endswith('.exe')]
+            if exe_files:
+                exe_path = os.path.join(folder_path, exe_files[0])
+                print(f"\n✅ Opening: {exe_files[0]}")
+                subprocess.Popen(exe_path, cwd=folder_path)
+        
+        # 02_ folder - Excel UserForm
+        if folder.startswith("02_"):
+            excel_files = [f for f in items if f.endswith('.xlsm')]
+            if excel_files:
+                excel_path = os.path.join(folder_path, excel_files[0])
+                print(f"\n✅ Opening UserForm...")
+                
+                vbs = f'''
+Dim xl, wb
+Set xl = CreateObject("Excel.Application")
+xl.Visible = True
+xl.DisplayAlerts = False
+Set wb = xl.Workbooks.Open("{excel_path}")
+wb.Worksheets("User Form").Activate
+WScript.Sleep 1000
+xl.Run "OpenForm"
+'''
+                
+                vbs_file = folder_path + "\\run.vbs"
+                open(vbs_file, 'w').write(vbs)
+                subprocess.call(['wscript', vbs_file])
+                print("✅ UserForm opened!")
+        
+        # 03_ folder - ShowUserForm macro run kro
+        if folder.startswith("03_"):
+            excel_files = [f for f in items if f.endswith('.xlsm')]
+            if excel_files:
+                excel_path = os.path.join(folder_path, excel_files[0])
+                print(f"\n✅ Opening UserForm1...")
+                
+                vbs = f'''
+Dim xl, wb
+Set xl = CreateObject("Excel.Application")
+xl.Visible = True
+xl.DisplayAlerts = False
+Set wb = xl.Workbooks.Open("{excel_path}")
+WScript.Sleep 1000
+xl.Run "ShowUserForm"
+'''
+                
+                vbs_file = folder_path + "\\run3.vbs"
+                open(vbs_file, 'w').write(vbs)
+                subprocess.call(['wscript', vbs_file])
+                print("✅ UserForm1 opened!")
+                
+else:
+    print("Path not found!")
